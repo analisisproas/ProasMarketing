@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Personalizado | ProAs Soluciones</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Framer Motion -->
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            500: '#f97316', // El naranja principal
+                            600: '#ea580c',
+                            900: '#7c2d12',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fff; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f97316; }
+    </style>
+</head>
+<body class="bg-white text-slate-900 antialiased selection:bg-orange-100 selection:text-orange-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { motion, AnimatePresence } = window.Motion;
+
+        // --- CONSTANTES GLOBALES ---
+        const mainHomeLink = "ProAs_Marketing_Web.html";
+
+        // --- ICONOS SVG ---
+        const IconMenu = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>;
+        const IconX = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>;
+        const IconChevronDown = () => <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>;
+        const IconCheck = () => <svg className="w-5 h-5 text-brand-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>;
+        const IconArrowRight = () => <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>;
+        
+        // Iconos ERP
+        const IconDatabase = () => <svg className="w-8 h-8 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>;
+        const IconChart = () => <svg className="w-8 h-8 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>;
+        const IconLock = () => <svg className="w-8 h-8 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>;
+        const IconUsers = () => <svg className="w-8 h-8 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>;
+
+        // --- COMPONENTES ---
+
+        const Navbar = () => {
+            const [isOpen, setIsOpen] = useState(false);
+            const [scrolled, setScrolled] = useState(false);
+            const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => setScrolled(window.scrollY > 20);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            return (
+                <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                        {/* LOGO */}
+                        <a href={mainHomeLink} className="flex items-center gap-2 group">
+                            <div className="w-10 h-10 bg-brand-500 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
+                                P
+                            </div>
+                            <span className="font-bold text-xl tracking-tight text-slate-900 group-hover:text-brand-600 transition-colors">ProAs</span>
+                        </a>
+
+                        {/* Desktop Menu */}
+                        <div className="hidden lg:flex items-center space-x-8">
+                            <a href={mainHomeLink} className="text-slate-600 hover:text-brand-500 font-medium transition-colors">Volver al Inicio</a>
+                            
+                            {/* Dropdown Activo (Visualmente en Soluciones) */}
+                            <div className="relative group" 
+                                 onMouseEnter={() => setIsDropdownOpen(true)} 
+                                 onMouseLeave={() => setIsDropdownOpen(false)}>
+                                <button className="flex items-center text-brand-500 font-medium transition-colors">
+                                    Soluciones ERP <IconChevronDown />
+                                </button>
+                                
+                                <div className={`absolute top-full left-0 pt-4 w-64 transform transition-all duration-200 origin-top-left ${isDropdownOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible'}`}>
+                                    <div className="bg-white rounded-xl shadow-xl border border-slate-100 p-2 overflow-hidden">
+                                        <div className="block px-4 py-3 rounded-lg bg-brand-50 text-brand-600 text-sm font-medium">
+                                            <div className="flex items-start">
+                                                <span className="mr-3 text-lg">🚀</span>
+                                                <div>
+                                                    <span className="block font-bold">ERP Personalizado</span>
+                                                    <span className="block text-xs opacity-80 mt-0.5">Estás aquí</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="#" className="block px-4 py-3 rounded-lg hover:bg-slate-50 hover:text-brand-600 text-slate-700 text-sm font-medium transition-colors opacity-50 cursor-not-allowed" title="Próximamente">
+                                            <div className="flex items-start">
+                                                <span className="mr-3 text-lg">🛠️</span>
+                                                <div>
+                                                    <span className="block text-slate-900 font-bold">Herramientas a Medida</span>
+                                                    <span className="block text-xs text-slate-500 mt-0.5">Software específico</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <a href="#ventajas" className="text-slate-600 hover:text-brand-500 font-medium transition-colors">Ventajas</a>
+                            <a href="#modulos" className="text-slate-600 hover:text-brand-500 font-medium transition-colors">Módulos</a>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="hidden lg:flex items-center gap-3">
+                            <a href="#contacto-erp" className="bg-slate-900 text-white px-5 py-2.5 rounded-full font-medium hover:bg-brand-500 transition-all shadow-lg hover:shadow-brand-500/25 border border-transparent">
+                                Solicitar Demo
+                            </a>
+                        </div>
+
+                        {/* Mobile Button */}
+                        <button className="lg:hidden text-slate-900 p-2" onClick={() => setIsOpen(!isOpen)}>
+                            {isOpen ? <IconX /> : <IconMenu />}
+                        </button>
+                    </div>
+
+                    {/* Mobile Menu */}
+                    <AnimatePresence>
+                        {isOpen && (
+                            <motion.div 
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="lg:hidden bg-white border-b border-slate-100 overflow-hidden shadow-xl"
+                            >
+                                <div className="px-4 pt-2 pb-6 space-y-2">
+                                    <a href={mainHomeLink} className="block px-3 py-2 text-base font-medium text-slate-700">Volver al Inicio</a>
+                                    <div className="px-3 py-2 text-brand-600 font-bold bg-brand-50 rounded-lg">ERP Personalizado</div>
+                                    <a href="#ventajas" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700">Ventajas</a>
+                                    <a href="#modulos" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700">Módulos</a>
+                                    <a href="#contacto-erp" onClick={() => setIsOpen(false)} className="block mt-4 text-center bg-brand-500 text-white px-5 py-3 rounded-lg font-medium shadow-lg shadow-brand-500/30">
+                                        Solicitar Demo
+                                    </a>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </nav>
+            );
+        };
+
+        const ERPHero = () => {
+            return (
+                <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -ml-[40rem] -mt-20 w-[80rem] h-[80rem] bg-slate-50 rounded-full blur-3xl -z-10 opacity-60"></div>
+                    
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6 }}
+                        >
+                            <span className="inline-block py-1 px-3 rounded-full bg-orange-100 text-brand-600 text-sm font-bold mb-6 tracking-wide uppercase">
+                                Software a Medida
+                            </span>
+                            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 mb-8 max-w-4xl mx-auto">
+                                Tu empresa no es estándar.<br/>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-500">
+                                    Tu ERP tampoco debería serlo.
+                                </span>
+                            </h1>
+                            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+                                Deja de adaptar tus procesos a programas rígidos. Diseñamos el sistema nervioso digital de tu negocio, conectando ventas, inventario y personal en una plataforma única y escalable.
+                            </p>
+                            <div className="flex flex-col sm:flex-row justify-center gap-4">
+                                <a href="#contacto-erp" className="inline-flex justify-center items-center px-8 py-4 bg-brand-500 text-white rounded-lg font-semibold text-lg hover:bg-brand-600 transition-all shadow-lg hover:shadow-brand-500/40 transform hover:-translate-y-1">
+                                    Presupuestar Proyecto
+                                    <IconArrowRight />
+                                </a>
+                                <a href="#comparativa" className="inline-flex justify-center items-center px-8 py-4 bg-white text-slate-700 border border-slate-200 rounded-lg font-semibold text-lg hover:bg-slate-50 transition-all">
+                                    ¿Por qué a medida?
+                                </a>
+                            </div>
+                        </motion.div>
+
+                        {/* Dashboard Mockup Abstract */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3, duration: 0.8 }}
+                            className="mt-16 relative mx-auto max-w-5xl"
+                        >
+                            <div className="bg-slate-900 rounded-xl shadow-2xl overflow-hidden border border-slate-800 p-2">
+                                <div className="bg-slate-800 rounded-t-lg h-8 flex items-center px-4 space-x-2">
+                                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                                </div>
+                                <div className="bg-slate-50 h-[300px] md:h-[500px] flex items-center justify-center text-slate-300 relative overflow-hidden">
+                                    <div className="absolute inset-0 grid grid-cols-4 gap-4 p-8 opacity-20">
+                                        <div className="col-span-1 bg-slate-900 rounded h-full"></div>
+                                        <div className="col-span-3 grid grid-rows-3 gap-4">
+                                            <div className="bg-slate-900 rounded h-full"></div>
+                                            <div className="bg-slate-900 rounded h-full row-span-2"></div>
+                                        </div>
+                                    </div>
+                                    <span className="text-xl md:text-3xl font-bold text-slate-400 z-10">Arquitectura de Datos Visualizada</span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                </section>
+            );
+        };
+
+        const Comparison = () => {
+            return (
+                <section id="comparativa" className="py-24 bg-slate-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">A Medida vs. Comercial</h2>
+                            <p className="text-slate-600 max-w-2xl mx-auto">
+                                La diferencia entre alquilar una solución y ser dueño de tu ventaja competitiva.
+                            </p>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                            {/* Card Genérico */}
+                            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm opacity-70 hover:opacity-100 transition-opacity">
+                                <h3 className="text-xl font-bold text-slate-500 mb-4">ERP Comercial (SaaS Genérico)</h3>
+                                <ul className="space-y-4">
+                                    <li className="flex items-start text-slate-600">
+                                        <span className="mr-2 text-red-400">✕</span> Pagos mensuales eternos por licencia.
+                                    </li>
+                                    <li className="flex items-start text-slate-600">
+                                        <span className="mr-2 text-red-400">✕</span> Funciones innecesarias que complican el uso.
+                                    </li>
+                                    <li className="flex items-start text-slate-600">
+                                        <span className="mr-2 text-red-400">✕</span> Difícil de integrar con tu hardware actual.
+                                    </li>
+                                    <li className="flex items-start text-slate-600">
+                                        <span className="mr-2 text-red-400">✕</span> Tú te adaptas al software.
+                                    </li>
+                                </ul>
+                            </div>
+
+                            {/* Card ProAs */}
+                            <div className="bg-white p-8 rounded-2xl border-2 border-brand-500 shadow-xl relative overflow-hidden">
+                                <div className="absolute top-0 right-0 bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">RECOMENDADO</div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-4">ERP ProAs (A Medida)</h3>
+                                <ul className="space-y-4">
+                                    <li className="flex items-start text-slate-700 font-medium">
+                                        <IconCheck /> Pago único o por hitos. Sin licencias por usuario.
+                                    </li>
+                                    <li className="flex items-start text-slate-700 font-medium">
+                                        <IconCheck /> Solo lo que necesitas. Interfaz limpia y veloz.
+                                    </li>
+                                    <li className="flex items-start text-slate-700 font-medium">
+                                        <IconCheck /> Conexión total API con tus herramientas.
+                                    </li>
+                                    <li className="flex items-start text-slate-700 font-medium">
+                                        <IconCheck /> El software evoluciona contigo.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const Modules = () => {
+            const modules = [
+                {
+                    icon: <IconChart />,
+                    title: "Cuadros de Mando (BI)",
+                    desc: "Visualiza tus KPIs en tiempo real. Ventas, stock y proyecciones en un solo vistazo para tomar decisiones informadas."
+                },
+                {
+                    icon: <IconDatabase />,
+                    title: "Gestión de Inventario",
+                    desc: "Control total de stock, alertas de reabastecimiento automático y trazabilidad completa de productos."
+                },
+                {
+                    icon: <IconUsers />,
+                    title: "CRM & RRHH Integrado",
+                    desc: "Centraliza los datos de clientes y empleados. Gestiona nóminas, vacaciones y el pipeline de ventas sin salir de la app."
+                },
+                {
+                    icon: <IconLock />,
+                    title: "Seguridad y Roles",
+                    desc: "Control de acceso granular. Tú decides quién ve qué información con un sistema de permisos robusto y seguro."
+                }
+            ];
+
+            return (
+                <section id="modulos" className="py-24 bg-white">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="grid lg:grid-cols-2 gap-16 items-center">
+                            <div>
+                                <span className="text-brand-600 font-bold tracking-wide uppercase text-sm">Modularidad Total</span>
+                                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mt-2 mb-6">Construimos bloques,<br/>no muros.</h2>
+                                <p className="text-slate-600 text-lg mb-8 leading-relaxed">
+                                    Nuestra arquitectura permite empezar pequeño y escalar. ¿Necesitas un módulo de facturación hoy y uno de logística el año que viene? Sin problema. Tu ERP crece a tu ritmo.
+                                </p>
+                                <div className="grid sm:grid-cols-2 gap-6">
+                                    {modules.map((mod, i) => (
+                                        <div key={i} className="flex flex-col">
+                                            <div className="bg-orange-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                                                {mod.icon}
+                                            </div>
+                                            <h3 className="font-bold text-slate-900">{mod.title}</h3>
+                                            <p className="text-sm text-slate-500 mt-1">{mod.desc}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            {/* Graphic Side */}
+                            <div className="relative">
+                                <div className="absolute -inset-4 bg-gradient-to-r from-brand-500 to-orange-400 rounded-2xl opacity-20 blur-lg transform rotate-2"></div>
+                                <div className="bg-slate-900 rounded-2xl p-6 relative shadow-2xl border border-slate-700">
+                                    <div className="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+                                        <div className="text-white font-mono text-sm">Dashboard Admin</div>
+                                        <div className="flex space-x-2">
+                                            <div className="w-2 h-2 rounded-full bg-slate-600"></div>
+                                            <div className="w-2 h-2 rounded-full bg-slate-600"></div>
+                                        </div>
+                                    </div>
+                                    {/* Abstract UI Representation */}
+                                    <div className="space-y-4">
+                                        <div className="flex gap-4">
+                                            <div className="w-1/3 h-24 bg-slate-800 rounded animate-pulse"></div>
+                                            <div className="w-1/3 h-24 bg-slate-800 rounded animate-pulse delay-75"></div>
+                                            <div className="w-1/3 h-24 bg-slate-800 rounded animate-pulse delay-150"></div>
+                                        </div>
+                                        <div className="h-40 bg-slate-800 rounded w-full mt-4"></div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="h-20 bg-slate-800 rounded"></div>
+                                            <div className="h-20 bg-slate-800 rounded"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const CTA = () => {
+            return (
+                <section id="contacto-erp" className="py-24 bg-white">
+                    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="bg-slate-900 rounded-3xl overflow-hidden shadow-2xl text-center px-6 py-16 relative">
+                            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-10">
+                                <div className="absolute w-64 h-64 bg-brand-500 rounded-full blur-3xl -top-10 -left-10"></div>
+                                <div className="absolute w-64 h-64 bg-blue-500 rounded-full blur-3xl bottom-0 right-0"></div>
+                            </div>
+                            
+                            <div className="relative z-10">
+                                <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">¿Listo para tomar el control total?</h2>
+                                <p className="text-slate-300 mb-10 text-lg max-w-2xl mx-auto">
+                                    Agendemos una sesión de consultoría gratuita de 30 minutos. Analizaremos tus procesos y te diremos si un ERP a medida es rentable para ti.
+                                </p>
+                                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                                    <button onClick={() => alert("Abriendo calendario...")} className="bg-brand-500 text-white px-8 py-4 rounded-lg font-bold hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/30">
+                                        Agendar Consultoría Gratis
+                                    </button>
+                                    <a href="mailto:proyectos@proas.es" className="bg-transparent border border-slate-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-slate-800 transition-all">
+                                        Enviar Email
+                                    </a>
+                                </div>
+                                <p className="text-slate-500 text-sm mt-6">Sin compromiso. Respuesta en menos de 24h.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const Footer = () => {
+            return (
+                <footer className="bg-slate-900 border-t border-slate-800 pt-16 pb-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="grid md:grid-cols-4 gap-12 mb-12">
+                            <div className="col-span-1 md:col-span-1">
+                                <div className="flex items-center gap-2 mb-6">
+                                    <div className="w-8 h-8 bg-brand-500 rounded text-white flex items-center justify-center font-bold">P</div>
+                                    <span className="font-bold text-xl text-white">ProAs</span>
+                                </div>
+                                <p className="text-slate-400 text-sm font-medium leading-relaxed">
+                                    Vertical de Desarrollo de Software.<br/>Oviedo, Asturias.
+                                </p>
+                            </div>
+                            
+                            <div>
+                                <h4 className="font-bold text-white mb-4">Soluciones</h4>
+                                <ul className="space-y-2 text-sm text-slate-400 font-medium">
+                                    <li><a href="#" className="text-brand-500">ERP Personalizado</a></li>
+                                    <li><a href="#" className="hover:text-brand-500 transition-colors">Automatización RPA</a></li>
+                                    <li><a href="#" className="hover:text-brand-500 transition-colors">Web Apps</a></li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h4 className="font-bold text-white mb-4">Recursos</h4>
+                                <ul className="space-y-2 text-sm text-slate-400 font-medium">
+                                    <li><a href="#" className="hover:text-brand-500 transition-colors">Casos de Éxito</a></li>
+                                    <li><a href="#" className="hover:text-brand-500 transition-colors">Blog Técnico</a></li>
+                                    <li><a href="#" className="hover:text-brand-500 transition-colors">Calculadora ROI</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
+                            <p>&copy; 2024 ProAs (Prompts Asturianos). Todos los derechos reservados.</p>
+                            <a href={mainHomeLink} className="mt-4 md:mt-0 hover:text-white transition-colors">← Volver a ProAs Principal</a>
+                        </div>
+                    </div>
+                </footer>
+            );
+        };
+
+        const App = () => {
+            return (
+                <div className="min-h-screen">
+                    <Navbar />
+                    <ERPHero />
+                    <Comparison />
+                    <Modules />
+                    <CTA />
+                    <Footer />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
