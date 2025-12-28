@@ -100,40 +100,37 @@
                         <div className="hidden lg:flex items-center space-x-8">
                             <a href={mainHomeLink} className="text-slate-600 hover:text-brand-500 font-medium transition-colors">Volver al Inicio</a>
                             
-                            {/* Dropdown Activo (Visualmente en Soluciones) */}
+                                                        {/* Dropdown Activo (Visualmente en Soluciones) */}
                             <div className="relative group" 
                                  onMouseEnter={() => setIsDropdownOpen(true)} 
                                  onMouseLeave={() => setIsDropdownOpen(false)}>
                                 <button className="flex items-center text-brand-500 font-medium transition-colors">
-                                    Soluciones ERP <IconChevronDown />
+                                    Soluciones a Medida <IconChevronDown />
                                 </button>
                                 
                                 <div className={`absolute top-full left-0 pt-4 w-64 transform transition-all duration-200 origin-top-left ${isDropdownOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible'}`}>
                                     <div className="bg-white rounded-xl shadow-xl border border-slate-100 p-2 overflow-hidden">
-                                        <div className="block px-4 py-3 rounded-lg bg-brand-50 text-brand-600 text-sm font-medium">
+                                        <a href={erpLink} className="block px-4 py-3 rounded-lg hover:bg-slate-50 hover:text-brand-600 text-slate-700 text-sm font-medium transition-colors">
                                             <div className="flex items-start">
                                                 <span className="mr-3 text-lg">🚀</span>
                                                 <div>
                                                     <span className="block font-bold">ERP Personalizado</span>
+                                                    <span className="block text-xs text-slate-500 mt-0.5">Gestión integral</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <div className="block px-4 py-3 rounded-lg bg-brand-50 text-brand-600 text-sm font-medium">
+                                            <div className="flex items-start">
+                                                <span className="mr-3 text-lg">🛠️</span>
+                                                <div>
+                                                    <span className="block font-bold">Herramientas a Medida</span>
                                                     <span className="block text-xs opacity-80 mt-0.5">Estás aquí</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="#" className="block px-4 py-3 rounded-lg hover:bg-slate-50 hover:text-brand-600 text-slate-700 text-sm font-medium transition-colors opacity-50 cursor-not-allowed" title="Próximamente">
-                                            <div className="flex items-start">
-                                                <span className="mr-3 text-lg">🛠️</span>
-                                                <div>
-                                                    <span className="block text-slate-900 font-bold">Herramientas a Medida</span>
-                                                    <span className="block text-xs text-slate-500 mt-0.5">Software específico</span>
-                                                </div>
-                                            </div>
-                                        </a>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <a href="#ventajas" className="text-slate-600 hover:text-brand-500 font-medium transition-colors">Ventajas</a>
-                            <a href="#modulos" className="text-slate-600 hover:text-brand-500 font-medium transition-colors">Módulos</a>
                         </div>
 
                         {/* Action Buttons */}
