@@ -5,34 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProAs | Soluciones Tecnológicas y Automatización</title>
     
-    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     
-    <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts: Inter (Tech standard font) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Framer Motion for animations -->
     <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         brand: {
                             50: '#fff7ed',
                             100: '#ffedd5',
-                            500: '#f97316', // El naranja principal
+                            500: '#f97316',
                             600: '#ea580c',
                             900: '#7c2d12',
                         }
@@ -43,7 +36,6 @@
     </script>
     <style>
         body { scroll-behavior: smooth; }
-        /* Eliminar scrollbar visual pero mantener funcionalidad */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #fff; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -57,6 +49,9 @@
         const { useState, useEffect } = React;
         const { motion, AnimatePresence } = window.Motion;
 
+        // --- URL DEL HUB (En producción cambiarás esto por tu dominio real) ---
+        const HUB_URL = "http://localhost:3000";
+
         // --- ICONOS SVG ---
         const IconCheck = () => <svg className="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>;
         const IconMenu = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>;
@@ -67,14 +62,11 @@
         const IconArrowRight = () => <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>;
         const IconChevronDown = () => <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>;
         const IconUser = () => <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>;
-        // Asegúrate de poner la ruta correcta donde guardes tu imagen
+        
         const Logo = ({ className }) => (
-         <img 
-              src="./img/1logo-proas.png"  // <-- CAMBIA ESTO por la ruta de tu archivo
-              alt="Logo ProAs" 
-             className={`object-contain ${className}`} 
-             />
+         <img src="./img/1logo-proas.png" alt="Logo ProAs" className={`object-contain ${className}`} />
         );
+
         // Iconos del método
         const StepIcon1 = () => <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>;
         const StepIcon2 = () => <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>;
@@ -82,102 +74,38 @@
         const StepIcon4 = () => <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>;
         const StepIcon5 = () => <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>;
 
-        // --- COMPONENTES ---
+        // --- COMPONENTES MODIFICADOS ---
 
-        const LoginModal = ({ isOpen, onClose }) => {
-            if (!isOpen) return null;
+        // NOTA: Hemos eliminado el LoginModal. Ahora redirigimos al HUB.
 
-            return (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-                    <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
-                        onClick={onClose}
-                    ></motion.div>
-                    
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative z-10 overflow-hidden"
-                    >
-                        <div className="absolute top-0 right-0 p-4">
-                            <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
-                                <IconX />
-                            </button>
-                        </div>
-                        
-                        <div className="text-center mb-6">
-                            <div className="w-12 h-12 bg-brand-500 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/30 mx-auto mb-4">
-                                P
-                            </div>
-                            <h2 className="text-2xl font-bold text-slate-900">Acceso Cliente</h2>
-                            <p className="text-slate-500 text-sm mt-1">Ingresa a tu panel de control ProAs</p>
-                        </div>
-
-                        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); console.log("Redirigiendo al panel..."); onClose(); }}>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                                <input type="email" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all" placeholder="usuario@empresa.com" autoFocus />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
-                                <input type="password" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all" placeholder="••••••••" />
-                            </div>
-                            <div className="flex items-center justify-between text-sm">
-                                <label className="flex items-center text-slate-600 cursor-pointer">
-                                    <input type="checkbox" className="mr-2 rounded text-brand-500 focus:ring-brand-500" /> Recuérdame
-                                </label>
-                                <a href="#" className="text-brand-600 hover:text-brand-700 font-medium">¿Olvidaste tu clave?</a>
-                            </div>
-                            <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3 rounded-lg hover:bg-brand-500 transition-all shadow-lg hover:shadow-brand-500/25">
-                                Entrar
-                            </button>
-                        </form>
-                    </motion.div>
-                </div>
-            );
-        };
-
-        const Navbar = ({ onOpenLogin }) => {
+        const Navbar = () => { // Eliminamos la prop onOpenLogin
             const [isOpen, setIsOpen] = useState(false);
             const [scrolled, setScrolled] = useState(false);
             const [activeSection, setActiveSection] = useState('hero');
             const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-            // Función de Scroll Manual Mejorada
             const scrollToSection = (e, sectionId) => {
                 e.preventDefault();
                 const element = document.getElementById(sectionId);
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth' });
                     setActiveSection(sectionId);
-                    setIsOpen(false); // Cerrar menú móvil si está abierto
-                    setIsDropdownOpen(false); // Cerrar dropdown si está abierto
+                    setIsOpen(false);
+                    setIsDropdownOpen(false);
                 }
             };
 
             useEffect(() => {
                 const handleScroll = () => {
                     setScrolled(window.scrollY > 20);
-
                     const sections = ['hero', 'servicios', 'metodo', 'novedades', 'contacto'];
                     let current = 'hero';
-                    
                     for (const section of sections) {
                         const element = document.getElementById(section);
-                        if (element) {
-                            const rect = element.getBoundingClientRect();
-                            if (rect.top <= 150) {
-                                current = section;
-                            }
-                        }
+                        if (element && element.getBoundingClientRect().top <= 150) current = section;
                     }
                     setActiveSection(current);
                 };
-
                 window.addEventListener('scroll', handleScroll);
                 handleScroll();
                 return () => window.removeEventListener('scroll', handleScroll);
@@ -193,47 +121,26 @@
             return (
                 <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                        {/* LOGO */}
                         <a href="#hero" onClick={(e) => scrollToSection(e, 'hero')} className="flex items-center gap-2 group cursor-pointer">
-                            <div className="w-10 h-10 bg-brand-500 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
-                                P
-                            </div>
+                            <div className="w-10 h-10 bg-brand-500 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">P</div>
                             <span className="font-bold text-xl tracking-tight text-slate-900 group-hover:text-brand-600 transition-colors">ProAs</span>
                         </a>
 
-                        {/* Desktop Menu */}
                         <div className="hidden lg:flex items-center space-x-8">
                             <a href="#hero" onClick={(e) => scrollToSection(e, 'hero')} className={navLinkClass('hero')}>Inicio</a>
                             <a href="#servicios" onClick={(e) => scrollToSection(e, 'servicios')} className={navLinkClass('servicios')}>Servicios</a>
                             
-                            {/* Dropdown de Productos con Puente Invisible (pt-4) */}
-                            <div className="relative group" 
-                                 onMouseEnter={() => setIsDropdownOpen(true)} 
-                                 onMouseLeave={() => setIsDropdownOpen(false)}>
+                            <div className="relative group" onMouseEnter={() => setIsDropdownOpen(true)} onMouseLeave={() => setIsDropdownOpen(false)}>
                                 <button className={`flex items-center font-medium transition-colors ${isDropdownOpen ? 'text-brand-500' : 'text-slate-600 hover:text-brand-500'}`}>
                                     Soluciones <IconChevronDown />
                                 </button>
-                                
-                                {/* Contenedor absoluto con padding-top para crear el "puente" */}
                                 <div className={`absolute top-full left-0 pt-4 w-64 transform transition-all duration-200 origin-top-left ${isDropdownOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible'}`}>
                                     <div className="bg-white rounded-xl shadow-xl border border-slate-100 p-2 overflow-hidden">
                                         <a href="./erp/erp.html" className="block px-4 py-3 rounded-lg hover:bg-brand-50 hover:text-brand-600 text-slate-700 text-sm font-medium transition-colors group/item">
-                                            <div className="flex items-start">
-                                                <span className="mr-3 text-lg">🚀</span>
-                                                <div>
-                                                    <span className="block text-slate-900 font-bold group-hover/item:text-brand-600">ERP Personalizado</span>
-                                                    <span className="block text-xs text-slate-500 mt-0.5">Gestión integral adaptada a tu flujo</span>
-                                                </div>
-                                            </div>
+                                            <div className="flex items-start"><span className="mr-3 text-lg">🚀</span><div><span className="block text-slate-900 font-bold group-hover/item:text-brand-600">ERP Personalizado</span><span className="block text-xs text-slate-500 mt-0.5">Gestión integral adaptada a tu flujo</span></div></div>
                                         </a>
                                         <a href="./herramientaspersonalizadas/herramientaspersonalizadas.html" className="block px-4 py-3 rounded-lg hover:bg-brand-50 hover:text-brand-600 text-slate-700 text-sm font-medium transition-colors group/item">
-                                            <div className="flex items-start">
-                                                <span className="mr-3 text-lg">🛠️</span>
-                                                <div>
-                                                    <span className="block text-slate-900 font-bold group-hover/item:text-brand-600">Herramientas a Medida</span>
-                                                    <span className="block text-xs text-slate-500 mt-0.5">Software específico para problemas únicos</span>
-                                                </div>
-                                            </div>
+                                            <div className="flex items-start"><span className="mr-3 text-lg">🛠️</span><div><span className="block text-slate-900 font-bold group-hover/item:text-brand-600">Herramientas a Medida</span><span className="block text-xs text-slate-500 mt-0.5">Software específico para problemas únicos</span></div></div>
                                         </a>
                                     </div>
                                 </div>
@@ -243,49 +150,40 @@
                             <a href="#novedades" onClick={(e) => scrollToSection(e, 'novedades')} className={navLinkClass('novedades')}>Novedades</a>
                         </div>
 
-                        {/* Action Buttons */}
                         <div className="hidden lg:flex items-center gap-3">
-                             <button onClick={onOpenLogin} className="flex items-center bg-white text-slate-900 px-5 py-2.5 rounded-full font-medium hover:bg-slate-50 transition-all border border-slate-200 shadow-sm hover:shadow-md hover:text-brand-600">
-                                <IconUser />
-                                Iniciar Sesión
-                            </button>
+                            {/* CAMBIO CLAVE: Enlace directo al HUB (localhost:3000) */}
+                            <a href={HUB_URL} className="flex items-center bg-white text-slate-900 px-5 py-2.5 rounded-full font-medium hover:bg-slate-50 transition-all border border-slate-200 shadow-sm hover:shadow-md hover:text-brand-600 cursor-pointer">
+                                <IconUser /> Iniciar Sesión
+                            </a>
                             <a href="#contacto" onClick={(e) => scrollToSection(e, 'contacto')} className="bg-slate-900 text-white px-5 py-2.5 rounded-full font-medium hover:bg-brand-500 transition-all shadow-lg hover:shadow-brand-500/25 border border-transparent cursor-pointer">
                                 Contactar
                             </a>
                         </div>
 
-                        {/* Mobile Button */}
                         <button className="lg:hidden text-slate-900 p-2" onClick={() => setIsOpen(!isOpen)}>
                             {isOpen ? <IconX /> : <IconMenu />}
                         </button>
                     </div>
 
-                    {/* Mobile Menu */}
                     <AnimatePresence>
                         {isOpen && (
-                            <motion.div 
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                                className="lg:hidden bg-white border-b border-slate-100 overflow-hidden shadow-xl"
-                            >
+                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="lg:hidden bg-white border-b border-slate-100 overflow-hidden shadow-xl">
                                 <div className="px-4 pt-2 pb-6 space-y-2">
                                     <a href="#hero" onClick={(e) => scrollToSection(e, 'hero')} className={`block px-3 py-2 text-base font-medium rounded-md cursor-pointer ${activeSection === 'hero' ? 'bg-brand-50 text-brand-600' : 'text-slate-700'}`}>Inicio</a>
                                     <a href="#servicios" onClick={(e) => scrollToSection(e, 'servicios')} className={`block px-3 py-2 text-base font-medium rounded-md cursor-pointer ${activeSection === 'servicios' ? 'bg-brand-50 text-brand-600' : 'text-slate-700'}`}>Servicios</a>
-                                    
                                     <div className="pl-3 py-2 border-l-2 border-slate-100 ml-3">
                                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Soluciones</span>
                                         <a href="./erp/index.html" className="block py-2 text-base font-medium text-slate-700 hover:text-brand-500 cursor-pointer">ERP Personalizado</a>
                                         <a href="#servicios" onClick={(e) => scrollToSection(e, 'servicios')} className="block py-2 text-base font-medium text-slate-700 hover:text-brand-500 cursor-pointer">Herramientas a Medida</a>
                                     </div>
-
                                     <a href="#metodo" onClick={(e) => scrollToSection(e, 'metodo')} className={`block px-3 py-2 text-base font-medium rounded-md cursor-pointer ${activeSection === 'metodo' ? 'bg-brand-50 text-brand-600' : 'text-slate-700'}`}>Método</a>
                                     <a href="#novedades" onClick={(e) => scrollToSection(e, 'novedades')} className={`block px-3 py-2 text-base font-medium rounded-md cursor-pointer ${activeSection === 'novedades' ? 'bg-brand-50 text-brand-600' : 'text-slate-700'}`}>Novedades</a>
                                     
                                     <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-slate-100">
-                                         <button onClick={() => { setIsOpen(false); onOpenLogin(); }} className="w-full text-center bg-white border border-slate-200 text-slate-900 px-5 py-3 rounded-lg font-medium hover:bg-slate-50">
+                                        {/* CAMBIO CLAVE: Enlace móvil al HUB */}
+                                        <a href={HUB_URL} className="w-full text-center bg-white border border-slate-200 text-slate-900 px-5 py-3 rounded-lg font-medium hover:bg-slate-50 cursor-pointer">
                                             Iniciar Sesión
-                                        </button>
+                                        </a>
                                         <a href="#contacto" onClick={(e) => scrollToSection(e, 'contacto')} className="w-full text-center bg-brand-500 text-white px-5 py-3 rounded-lg font-medium shadow-lg shadow-brand-500/30 cursor-pointer">
                                             Contactar Ahora
                                         </a>
@@ -339,21 +237,9 @@
 
         const Services = () => {
             const services = [
-                {
-                    icon: <IconAuto />,
-                    title: "Automatización de Tareas",
-                    desc: "Eliminamos el trabajo repetitivo. Scripts inteligentes y bots que manejan datos, correos y reportes mientras tú duermes."
-                },
-                {
-                    icon: <IconCpu />,
-                    title: "Diseño de ERP a Medida",
-                    desc: "Olvídate de software genérico. Creamos sistemas de gestión (ERP) que se adaptan a TU proceso real, y no al revés."
-                },
-                {
-                    icon: <IconCode />,
-                    title: "Desarrollo de Software",
-                    desc: "Aplicaciones web y móviles robustas, escalables y seguras, diseñadas con las últimas tecnologías del mercado."
-                }
+                { icon: <IconAuto />, title: "Automatización de Tareas", desc: "Eliminamos el trabajo repetitivo. Scripts inteligentes y bots que manejan datos, correos y reportes mientras tú duermes." },
+                { icon: <IconCpu />, title: "Diseño de ERP a Medida", desc: "Olvídate de software genérico. Creamos sistemas de gestión (ERP) que se adaptan a TU proceso real, y no al revés." },
+                { icon: <IconCode />, title: "Desarrollo de Software", desc: "Aplicaciones web y móviles robustas, escalables y seguras, diseñadas con las últimas tecnologías del mercado." }
             ];
 
             return (
@@ -361,24 +247,12 @@
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-16">
                             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Nuestros Servicios</h2>
-                            <p className="text-slate-600 max-w-2xl mx-auto">
-                                Soluciones integrales para modernizar tu infraestructura digital.
-                            </p>
+                            <p className="text-slate-600 max-w-2xl mx-auto">Soluciones integrales para modernizar tu infraestructura digital.</p>
                         </div>
-
                         <div className="grid md:grid-cols-3 gap-8">
                             {services.map((s, i) => (
-                                <motion.div 
-                                    key={i}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: i * 0.1 }}
-                                    className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-shadow border border-slate-100 group"
-                                >
-                                    <div className="bg-brand-50 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                                        {s.icon}
-                                    </div>
+                                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-shadow border border-slate-100 group">
+                                    <div className="bg-brand-50 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">{s.icon}</div>
                                     <h3 className="text-xl font-bold text-slate-900 mb-3">{s.title}</h3>
                                     <p className="text-slate-600 leading-relaxed">{s.desc}</p>
                                 </motion.div>
@@ -405,33 +279,17 @@
                             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">El Método ProAs</h2>
                             <p className="text-slate-600">Un proceso transparente diseñado para resultados tangibles.</p>
                         </div>
-
                         <div className="relative">
-                            {/* Line connecting steps (Desktop) */}
                             <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-slate-200 -z-10"></div>
-                            
                             <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
                                 {steps.map((step, i) => (
-                                    <motion.div 
-                                        key={i}
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: i * 0.15 }}
-                                        className="relative flex flex-col items-center text-center group"
-                                    >
+                                    <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }} className="relative flex flex-col items-center text-center group">
                                         <div className="w-24 h-24 bg-white border-4 border-slate-100 rounded-full flex items-center justify-center mb-6 z-10 group-hover:border-brand-500 transition-colors duration-300 shadow-sm">
-                                            <div className="w-16 h-16 bg-brand-500 rounded-full flex items-center justify-center shadow-md">
-                                                {step.icon}
-                                            </div>
+                                            <div className="w-16 h-16 bg-brand-500 rounded-full flex items-center justify-center shadow-md">{step.icon}</div>
                                         </div>
                                         <h3 className="text-lg font-bold text-slate-900 mb-2">{step.title}</h3>
                                         <p className="text-sm text-slate-500 px-2">{step.desc}</p>
-                                        
-                                        {/* Mobile connector line */}
-                                        {i !== steps.length - 1 && (
-                                            <div className="md:hidden absolute h-12 w-0.5 bg-slate-200 -bottom-10 left-1/2 transform -translate-x-1/2"></div>
-                                        )}
+                                        {i !== steps.length - 1 && (<div className="md:hidden absolute h-12 w-0.5 bg-slate-200 -bottom-10 left-1/2 transform -translate-x-1/2"></div>)}
                                     </motion.div>
                                 ))}
                             </div>
@@ -443,49 +301,24 @@
 
         const News = () => {
             const posts = [
-                {
-                    title: "El futuro de la automatización RPA en 2025",
-                    cat: "Tecnología",
-                    date: "28 Dic, 2024",
-                    img: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800"
-                },
-                {
-                    title: "Caso de Éxito: Optimizando una logística local",
-                    cat: "Casos",
-                    date: "15 Dic, 2024",
-                    img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800"
-                },
-                {
-                    title: "¿Por qué un ERP a medida ahorra costes?",
-                    cat: "Empresa",
-                    date: "02 Dic, 2024",
-                    img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800"
-                }
+                { title: "El futuro de la automatización RPA en 2025", cat: "Tecnología", date: "28 Dic, 2024", img: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800" },
+                { title: "Caso de Éxito: Optimizando una logística local", cat: "Casos", date: "15 Dic, 2024", img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800" },
+                { title: "¿Por qué un ERP a medida ahorra costes?", cat: "Empresa", date: "02 Dic, 2024", img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800" }
             ];
 
             return (
                 <section id="novedades" className="py-24 bg-slate-50 scroll-mt-28">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex justify-between items-end mb-12">
-                            <div>
-                                <h2 className="text-3xl font-bold text-slate-900 mb-2">Novedades ProAs</h2>
-                                <p className="text-slate-600">Últimas noticias y artículos sobre tecnología.</p>
-                            </div>
+                            <div><h2 className="text-3xl font-bold text-slate-900 mb-2">Novedades ProAs</h2><p className="text-slate-600">Últimas noticias y artículos sobre tecnología.</p></div>
                             <a href="#" className="hidden md:block text-brand-600 font-semibold hover:text-brand-700">Ver todo el blog &rarr;</a>
                         </div>
-
                         <div className="grid md:grid-cols-3 gap-8">
                             {posts.map((post, i) => (
                                 <div key={i} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all group">
-                                    <div className="h-48 overflow-hidden">
-                                        <img src={post.img} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                    </div>
+                                    <div className="h-48 overflow-hidden"><img src={post.img} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /></div>
                                     <div className="p-6">
-                                        <div className="flex items-center text-xs text-slate-500 mb-3 space-x-2">
-                                            <span className="bg-brand-50 text-brand-700 px-2 py-1 rounded font-medium">{post.cat}</span>
-                                            <span>•</span>
-                                            <span>{post.date}</span>
-                                        </div>
+                                        <div className="flex items-center text-xs text-slate-500 mb-3 space-x-2"><span className="bg-brand-50 text-brand-700 px-2 py-1 rounded font-medium">{post.cat}</span><span>•</span><span>{post.date}</span></div>
                                         <h3 className="text-lg font-bold text-slate-900 mb-2 leading-snug group-hover:text-brand-600 transition-colors">{post.title}</h3>
                                         <a href="#" className="text-sm font-semibold text-slate-400 hover:text-slate-700">Leer más</a>
                                     </div>
@@ -504,38 +337,18 @@
                         <div className="bg-slate-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row">
                             <div className="p-10 md:p-16 md:w-1/2 flex flex-col justify-center">
                                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Empieza a optimizar tu empresa hoy.</h2>
-                                <p className="text-slate-300 mb-8 text-lg">
-                                    Agenda una reunión inicial gratuita para analizar tu flujo de trabajo. Sin compromisos.
-                                </p>
+                                <p className="text-slate-300 mb-8 text-lg">Agenda una reunión inicial gratuita para analizar tu flujo de trabajo. Sin compromisos.</p>
                                 <div className="space-y-4">
-                                    <div className="flex items-center text-slate-300">
-                                        <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center mr-4 text-brand-500">✉️</div>
-                                        analisis.proas@gmail.com
-                                    </div>
-                                    <div className="flex items-center text-slate-300">
-                                        <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center mr-4 text-brand-500">📍</div>
-                                        Oviedo, Asturias, España
-                                    </div>
+                                    <div className="flex items-center text-slate-300"><div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center mr-4 text-brand-500">✉️</div>analisis.proas@gmail.com</div>
+                                    <div className="flex items-center text-slate-300"><div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center mr-4 text-brand-500">📍</div>Oviedo, Asturias, España</div>
                                 </div>
                             </div>
-
                             <div className="bg-white p-10 md:p-16 md:w-1/2">
                                 <form className="space-y-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
-                                        <input type="text" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all" placeholder="Tu nombre" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Email Corporativo</label>
-                                        <input type="email" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all" placeholder="nombre@empresa.com" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Mensaje</label>
-                                        <textarea rows="4" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all" placeholder="Cuéntanos qué necesitas automatizar..."></textarea>
-                                    </div>
-                                    <button type="submit" className="w-full bg-brand-500 text-white font-bold py-4 rounded-lg hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/30">
-                                        Enviar Solicitud
-                                    </button>
+                                    <div><label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label><input type="text" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all" placeholder="Tu nombre" /></div>
+                                    <div><label className="block text-sm font-medium text-slate-700 mb-1">Email Corporativo</label><input type="email" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all" placeholder="nombre@empresa.com" /></div>
+                                    <div><label className="block text-sm font-medium text-slate-700 mb-1">Mensaje</label><textarea rows="4" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all" placeholder="Cuéntanos qué necesitas automatizar..."></textarea></div>
+                                    <button type="submit" className="w-full bg-brand-500 text-white font-bold py-4 rounded-lg hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/30">Enviar Solicitud</button>
                                 </form>
                             </div>
                         </div>
@@ -550,50 +363,25 @@
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-4 gap-12 mb-12">
                             <div className="col-span-1 md:col-span-1">
-                                <div className="flex items-center gap-3 mb-6">
-                                  <Logo className="w-10 h-auto" /> {/* Ajusta el ancho (w-10) según necesites */}
-                                  <span className="font-bold text-xl text-white">ProAs</span>
-                                </div>
-                                <p className="text-slate-400 text-sm font-medium leading-relaxed">
-                                    Prompts Asturianos. Soluciones de software y automatización diseñadas para el crecimiento empresarial.
-                                </p>
+                                <div className="flex items-center gap-3 mb-6"><Logo className="w-10 h-auto" /><span className="font-bold text-xl text-white">ProAs</span></div>
+                                <p className="text-slate-400 text-sm font-medium leading-relaxed">Prompts Asturianos. Soluciones de software y automatización diseñadas para el crecimiento empresarial.</p>
                             </div>
-                            
                             <div>
                                 <h4 className="font-bold text-white mb-4">Empresa</h4>
-                                <ul className="space-y-2 text-sm text-slate-400 font-medium">
-                                    <li><a href="#" className="hover:text-brand-500 transition-colors">Sobre Nosotros</a></li>
-                                    <li><a href="#" className="hover:text-brand-500 transition-colors">Equipo</a></li>
-                                    <li><a href="#" className="hover:text-brand-500 transition-colors">Carreras</a></li>
-                                </ul>
+                                <ul className="space-y-2 text-sm text-slate-400 font-medium"><li><a href="#" className="hover:text-brand-500 transition-colors">Sobre Nosotros</a></li><li><a href="#" className="hover:text-brand-500 transition-colors">Equipo</a></li><li><a href="#" className="hover:text-brand-500 transition-colors">Carreras</a></li></ul>
                             </div>
-
                             <div>
                                 <h4 className="font-bold text-white mb-4">Servicios</h4>
-                                <ul className="space-y-2 text-sm text-slate-400 font-medium">
-                                    <li><a href="#" className="hover:text-brand-500 transition-colors">Automatización RPA</a></li>
-                                    <li><a href="#" className="hover:text-brand-500 transition-colors">Desarrollo ERP</a></li>
-                                    <li><a href="#" className="hover:text-brand-500 transition-colors">Consultoría Tecnológica</a></li>
-                                </ul>
+                                <ul className="space-y-2 text-sm text-slate-400 font-medium"><li><a href="#" className="hover:text-brand-500 transition-colors">Automatización RPA</a></li><li><a href="#" className="hover:text-brand-500 transition-colors">Desarrollo ERP</a></li><li><a href="#" className="hover:text-brand-500 transition-colors">Consultoría Tecnológica</a></li></ul>
                             </div>
-
                             <div>
                                 <h4 className="font-bold text-white mb-4">Síguenos</h4>
-                                <div className="flex space-x-4">
-                                    <a href="#" className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all">LI</a>
-                                    <a href="#" className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all">TW</a>
-                                    <a href="#" className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all">IG</a>
-                                </div>
+                                <div className="flex space-x-4"><a href="#" className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all">LI</a><a href="#" className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all">TW</a><a href="#" className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all">IG</a></div>
                             </div>
                         </div>
-                        
                         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
                             <p>&copy; 2024 ProAs (Prompts Asturianos). Todos los derechos reservados.</p>
-                            <div className="flex space-x-6 mt-4 md:mt-0">
-                                <a href="#" className="hover:text-slate-300 transition-colors">Privacidad</a>
-                                <a href="#" className="hover:text-slate-300 transition-colors">Cookies</a>
-                                <a href="#" className="hover:text-slate-300 transition-colors">Términos</a>
-                            </div>
+                            <div className="flex space-x-6 mt-4 md:mt-0"><a href="#" className="hover:text-slate-300 transition-colors">Privacidad</a><a href="#" className="hover:text-slate-300 transition-colors">Cookies</a><a href="#" className="hover:text-slate-300 transition-colors">Términos</a></div>
                         </div>
                     </div>
                 </footer>
@@ -601,21 +389,17 @@
         };
 
         const App = () => {
-            const [isLoginOpen, setIsLoginOpen] = useState(false);
-
+            // Ya no necesitamos estado para login
             return (
                 <div className="min-h-screen">
-                    <Navbar onOpenLogin={() => setIsLoginOpen(true)} />
+                    <Navbar />
                     <Hero />
                     <Services />
                     <Method />
                     <News />
                     <Contact />
                     <Footer />
-                    
-                    <AnimatePresence>
-                        {isLoginOpen && <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />}
-                    </AnimatePresence>
+                    {/* El modal de login ha sido eliminado */}
                 </div>
             );
         };
