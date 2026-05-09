@@ -7,13 +7,9 @@
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
 
     <script>
@@ -49,7 +45,7 @@
         const { useState, useEffect } = React;
         const { motion, AnimatePresence } = window.Motion;
 
-        // --- URL DEL HUB (En producción cambiarás esto por tu dominio real) ---
+        // --- URL DEL HUB ---
         const HUB_URL = "http://localhost:3000";
 
         // --- ICONOS SVG ---
@@ -64,21 +60,19 @@
         const IconUser = () => <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>;
         
         const Logo = ({ className }) => (
-         <img src="./img/1logo-proas.png" alt="Logo ProAs" className={`object-contain ${className}`} />
+         <img src="./img/1logo-proas.png" alt="Logo ProAs" className={`object-contain ${className}`} onError={(e) => {e.target.style.display='none'}} />
         );
 
-        // Iconos del método
+        // --- ICONOS DEL MÉTODO ---
         const StepIcon1 = () => <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>;
         const StepIcon2 = () => <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>;
         const StepIcon3 = () => <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>;
         const StepIcon4 = () => <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>;
         const StepIcon5 = () => <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>;
 
-        // --- COMPONENTES MODIFICADOS ---
+        // --- COMPONENTES ---
 
-        // NOTA: Hemos eliminado el LoginModal. Ahora redirigimos al HUB.
-
-        const Navbar = () => { // Eliminamos la prop onOpenLogin
+        const Navbar = () => {
             const [isOpen, setIsOpen] = useState(false);
             const [scrolled, setScrolled] = useState(false);
             const [activeSection, setActiveSection] = useState('hero');
@@ -98,7 +92,8 @@
             useEffect(() => {
                 const handleScroll = () => {
                     setScrolled(window.scrollY > 20);
-                    const sections = ['hero', 'servicios', 'metodo', 'novedades', 'contacto'];
+                    // Actualizado para incluir la sección de herramientas
+                    const sections = ['hero', 'servicios', 'herramientas', 'metodo', 'novedades', 'contacto'];
                     let current = 'hero';
                     for (const section of sections) {
                         const element = document.getElementById(section);
@@ -131,7 +126,7 @@
                             <a href="#servicios" onClick={(e) => scrollToSection(e, 'servicios')} className={navLinkClass('servicios')}>Servicios</a>
                             
                             <div className="relative group" onMouseEnter={() => setIsDropdownOpen(true)} onMouseLeave={() => setIsDropdownOpen(false)}>
-                                <button className={`flex items-center font-medium transition-colors ${isDropdownOpen ? 'text-brand-500' : 'text-slate-600 hover:text-brand-500'}`}>
+                                <button className={`flex items-center font-medium transition-colors ${isDropdownOpen || activeSection === 'herramientas' ? 'text-brand-500' : 'text-slate-600 hover:text-brand-500'}`}>
                                     Soluciones <IconChevronDown />
                                 </button>
                                 <div className={`absolute top-full left-0 pt-4 w-64 transform transition-all duration-200 origin-top-left ${isDropdownOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible'}`}>
@@ -139,7 +134,8 @@
                                         <a href="./erp/erp.html" className="block px-4 py-3 rounded-lg hover:bg-brand-50 hover:text-brand-600 text-slate-700 text-sm font-medium transition-colors group/item">
                                             <div className="flex items-start"><span className="mr-3 text-lg">🚀</span><div><span className="block text-slate-900 font-bold group-hover/item:text-brand-600">ERP Personalizado</span><span className="block text-xs text-slate-500 mt-0.5">Gestión integral adaptada a tu flujo</span></div></div>
                                         </a>
-                                        <a href="./herramientaspersonalizadas/herramientaspersonalizadas.html" className="block px-4 py-3 rounded-lg hover:bg-brand-50 hover:text-brand-600 text-slate-700 text-sm font-medium transition-colors group/item">
+                                        {/* Arreglado: ahora ancla a la sección de herramientas */}
+                                        <a href="#herramientas" onClick={(e) => scrollToSection(e, 'herramientas')} className="block px-4 py-3 rounded-lg hover:bg-brand-50 hover:text-brand-600 text-slate-700 text-sm font-medium transition-colors group/item">
                                             <div className="flex items-start"><span className="mr-3 text-lg">🛠️</span><div><span className="block text-slate-900 font-bold group-hover/item:text-brand-600">Herramientas a Medida</span><span className="block text-xs text-slate-500 mt-0.5">Software específico para problemas únicos</span></div></div>
                                         </a>
                                     </div>
@@ -151,7 +147,6 @@
                         </div>
 
                         <div className="hidden lg:flex items-center gap-3">
-                            {/* CAMBIO CLAVE: Enlace directo al HUB (localhost:3000) */}
                             <a href={HUB_URL} className="flex items-center bg-white text-slate-900 px-5 py-2.5 rounded-full font-medium hover:bg-slate-50 transition-all border border-slate-200 shadow-sm hover:shadow-md hover:text-brand-600 cursor-pointer">
                                 <IconUser /> Iniciar Sesión
                             </a>
@@ -173,14 +168,13 @@
                                     <a href="#servicios" onClick={(e) => scrollToSection(e, 'servicios')} className={`block px-3 py-2 text-base font-medium rounded-md cursor-pointer ${activeSection === 'servicios' ? 'bg-brand-50 text-brand-600' : 'text-slate-700'}`}>Servicios</a>
                                     <div className="pl-3 py-2 border-l-2 border-slate-100 ml-3">
                                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Soluciones</span>
-                                        <a href="./erp/index.html" className="block py-2 text-base font-medium text-slate-700 hover:text-brand-500 cursor-pointer">ERP Personalizado</a>
-                                        <a href="#servicios" onClick={(e) => scrollToSection(e, 'servicios')} className="block py-2 text-base font-medium text-slate-700 hover:text-brand-500 cursor-pointer">Herramientas a Medida</a>
+                                        <a href="./erp/erp.html" className="block py-2 text-base font-medium text-slate-700 hover:text-brand-500 cursor-pointer">ERP Personalizado</a>
+                                        <a href="#herramientas" onClick={(e) => scrollToSection(e, 'herramientas')} className="block py-2 text-base font-medium text-slate-700 hover:text-brand-500 cursor-pointer">Herramientas a Medida</a>
                                     </div>
                                     <a href="#metodo" onClick={(e) => scrollToSection(e, 'metodo')} className={`block px-3 py-2 text-base font-medium rounded-md cursor-pointer ${activeSection === 'metodo' ? 'bg-brand-50 text-brand-600' : 'text-slate-700'}`}>Método</a>
                                     <a href="#novedades" onClick={(e) => scrollToSection(e, 'novedades')} className={`block px-3 py-2 text-base font-medium rounded-md cursor-pointer ${activeSection === 'novedades' ? 'bg-brand-50 text-brand-600' : 'text-slate-700'}`}>Novedades</a>
                                     
                                     <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-slate-100">
-                                        {/* CAMBIO CLAVE: Enlace móvil al HUB */}
                                         <a href={HUB_URL} className="w-full text-center bg-white border border-slate-200 text-slate-900 px-5 py-3 rounded-lg font-medium hover:bg-slate-50 cursor-pointer">
                                             Iniciar Sesión
                                         </a>
@@ -235,10 +229,38 @@
             );
         };
 
+        const Services = () => {
+            const services = [
+                { icon: <IconAuto />, title: "Automatización de Tareas", desc: "Eliminamos el trabajo repetitivo. Scripts inteligentes y bots que manejan datos, correos y reportes mientras tú duermes." },
+                { icon: <IconCpu />, title: "Diseño de ERP a Medida", desc: "Olvídate de software genérico. Creamos sistemas de gestión (ERP) que se adaptan a TU proceso real, y no al revés." },
+                { icon: <IconCode />, title: "Desarrollo de Software", desc: "Aplicaciones web y móviles robustas, escalables y seguras, diseñadas con las últimas tecnologías del mercado." }
+            ];
+
+            return (
+                <section id="servicios" className="py-24 bg-slate-50 scroll-mt-28">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Nuestros Servicios</h2>
+                            <p className="text-slate-600 max-w-2xl mx-auto">Soluciones integrales para modernizar tu infraestructura digital.</p>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-8">
+                            {services.map((s, i) => (
+                                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-shadow border border-slate-100 group">
+                                    <div className="bg-brand-50 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">{s.icon}</div>
+                                    <h3 className="text-xl font-bold text-slate-900 mb-3">{s.title}</h3>
+                                    <p className="text-slate-600 leading-relaxed">{s.desc}</p>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // --- EL NUEVO COMPONENTE INTEGRADO ---
         const InteractiveTools = () => {
             const [activeTab, setActiveTab] = useState(0);
 
-            // Datos de la sección interactiva con niveles de complejidad
             const toolsData = [
                 {
                     id: 0,
@@ -267,11 +289,14 @@
             ];
 
             return (
-                <section className="py-24 bg-white relative">
+                <section id="herramientas" className="py-24 bg-white relative scroll-mt-28">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Herramientas a Medida</h2>
+                            <p className="text-slate-600 max-w-2xl mx-auto">Desde scripts que ahorran horas hasta software completo. Soluciones que se adaptan a tu forma de trabajar, no al revés.</p>
+                        </div>
                         
                         <div className="grid lg:grid-cols-12 gap-12 items-center">
-                            {/* Lista de Categorías */}
                             <div className="lg:col-span-5 space-y-4">
                                 {toolsData.map((tool, index) => (
                                     <div 
@@ -315,7 +340,6 @@
                                 ))}
                             </div>
 
-                            {/* Visualizador interactivo */}
                             <div className="lg:col-span-7 h-[400px] lg:h-[600px] rounded-3xl overflow-hidden relative shadow-2xl bg-slate-900 border border-slate-200 group">
                                 <AnimatePresence mode="wait">
                                     <motion.div
@@ -331,7 +355,6 @@
                                             alt={toolsData[activeTab].title}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                         />
-                                        {/* Degradado oscuro para resaltar el texto inferior */}
                                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
                                         
                                         <div className="absolute bottom-0 left-0 w-full p-8 md:p-12 text-white">
@@ -367,7 +390,7 @@
             ];
 
             return (
-                <section id="metodo" className="py-24 bg-white relative overflow-hidden scroll-mt-28">
+                <section id="metodo" className="py-24 bg-slate-50 relative overflow-hidden scroll-mt-28">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-20">
                             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">El Método ProAs</h2>
@@ -401,7 +424,7 @@
             ];
 
             return (
-                <section id="novedades" className="py-24 bg-slate-50 scroll-mt-28">
+                <section id="novedades" className="py-24 bg-white scroll-mt-28">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex justify-between items-end mb-12">
                             <div><h2 className="text-3xl font-bold text-slate-900 mb-2">Novedades ProAs</h2><p className="text-slate-600">Últimas noticias y artículos sobre tecnología.</p></div>
@@ -409,7 +432,7 @@
                         </div>
                         <div className="grid md:grid-cols-3 gap-8">
                             {posts.map((post, i) => (
-                                <div key={i} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all group">
+                                <div key={i} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all group border border-slate-100">
                                     <div className="h-48 overflow-hidden"><img src={post.img} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /></div>
                                     <div className="p-6">
                                         <div className="flex items-center text-xs text-slate-500 mb-3 space-x-2"><span className="bg-brand-50 text-brand-700 px-2 py-1 rounded font-medium">{post.cat}</span><span>•</span><span>{post.date}</span></div>
@@ -426,7 +449,7 @@
 
         const Contact = () => {
             return (
-                <section id="contacto" className="py-24 bg-white scroll-mt-28">
+                <section id="contacto" className="py-24 bg-slate-50 scroll-mt-28">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="bg-slate-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row">
                             <div className="p-10 md:p-16 md:w-1/2 flex flex-col justify-center">
@@ -483,17 +506,17 @@
         };
 
         const App = () => {
-            // Ya no necesitamos estado para login
             return (
                 <div className="min-h-screen">
                     <Navbar />
                     <Hero />
                     <Services />
+                    {/* El Componente ya está aquí integrado de forma segura */}
+                    <InteractiveTools />
                     <Method />
                     <News />
                     <Contact />
                     <Footer />
-                    {/* El modal de login ha sido eliminado */}
                 </div>
             );
         };
