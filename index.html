@@ -235,28 +235,122 @@
             );
         };
 
-        const Services = () => {
-            const services = [
-                { icon: <IconAuto />, title: "Automatización de Tareas", desc: "Eliminamos el trabajo repetitivo. Scripts inteligentes y bots que manejan datos, correos y reportes mientras tú duermes." },
-                { icon: <IconCpu />, title: "Diseño de ERP a Medida", desc: "Olvídate de software genérico. Creamos sistemas de gestión (ERP) que se adaptan a TU proceso real, y no al revés." },
-                { icon: <IconCode />, title: "Desarrollo de Software", desc: "Aplicaciones web y móviles robustas, escalables y seguras, diseñadas con las últimas tecnologías del mercado." }
+        const InteractiveTools = () => {
+            const [activeTab, setActiveTab] = useState(0);
+
+            // Datos de la sección interactiva con niveles de complejidad
+            const toolsData = [
+                {
+                    id: 0,
+                    title: "Scripts y Micro-Automatizaciones",
+                    icon: "⚡",
+                    description: "Pequeñas pero potentes piezas de código. Extrae datos de la web, vuelca información masiva en Excel/CSV, o integra APIs de terceros. Ideal para eliminar cuellos de botella mecánicos que roban horas cada semana a tu equipo.",
+                    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1000",
+                    tags: ["Python", "Node.js", "APIs", "Scraping", "Excel/CSV"]
+                },
+                {
+                    id: 1,
+                    title: "Macros para Programas de Diseño",
+                    icon: "📐",
+                    description: "Plugins desarrollados específicamente para software de arquitectura, ingeniería o diseño (AutoCAD, Revit, SolidWorks). Genera automáticamente planos técnicos, acotaciones repetitivas o exportaciones masivas en un solo clic.",
+                    image: "https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80&w=1000",
+                    tags: ["AutoCAD", "Revit", "LISP", "C# / .NET", "Adobe Suite"]
+                },
+                {
+                    id: 2,
+                    title: "Software Completo a Medida",
+                    icon: "💻",
+                    description: "Desarrollo Full-Stack corporativo. Construimos portales para clientes, aplicaciones de escritorio o plataformas web completas que estructuran de forma segura y escalable la operativa central de tu empresa.",
+                    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000",
+                    tags: ["React / Vue", "Bases de Datos", "Dashboards Web", "SaaS Interno"]
+                }
             ];
 
             return (
-                <section id="servicios" className="py-24 bg-slate-50 scroll-mt-28">
+                <section className="py-24 bg-white relative">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Nuestros Servicios</h2>
-                            <p className="text-slate-600 max-w-2xl mx-auto">Soluciones integrales para modernizar tu infraestructura digital.</p>
-                        </div>
-                        <div className="grid md:grid-cols-3 gap-8">
-                            {services.map((s, i) => (
-                                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-shadow border border-slate-100 group">
-                                    <div className="bg-brand-50 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">{s.icon}</div>
-                                    <h3 className="text-xl font-bold text-slate-900 mb-3">{s.title}</h3>
-                                    <p className="text-slate-600 leading-relaxed">{s.desc}</p>
-                                </motion.div>
-                            ))}
+                        
+                        <div className="grid lg:grid-cols-12 gap-12 items-center">
+                            {/* Lista de Categorías */}
+                            <div className="lg:col-span-5 space-y-4">
+                                {toolsData.map((tool, index) => (
+                                    <div 
+                                        key={tool.id}
+                                        onClick={() => setActiveTab(index)}
+                                        className={`p-6 rounded-2xl cursor-pointer transition-all duration-300 border-2 ${
+                                            activeTab === index 
+                                            ? 'border-brand-500 bg-white shadow-xl shadow-brand-500/10 scale-[1.02] md:scale-105 z-10 relative' 
+                                            : 'border-transparent bg-slate-50 hover:bg-slate-100'
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-4 mb-3">
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${activeTab === index ? 'bg-brand-50' : 'bg-white shadow-sm'}`}>
+                                                {tool.icon}
+                                            </div>
+                                            <h3 className={`text-xl font-bold ${activeTab === index ? 'text-brand-600' : 'text-slate-900'}`}>
+                                                {tool.title}
+                                            </h3>
+                                        </div>
+                                        
+                                        <AnimatePresence>
+                                            {activeTab === index && (
+                                                <motion.div 
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: 'auto' }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="overflow-hidden"
+                                                >
+                                                    <p className="text-slate-600 text-sm leading-relaxed mt-2">{tool.description}</p>
+                                                    <div className="mt-4 flex flex-wrap gap-2">
+                                                        {tool.tags.map(tag => (
+                                                            <span key={tag} className="px-3 py-1 bg-brand-50 text-brand-700 text-xs font-semibold rounded-full border border-brand-100">
+                                                                {tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Visualizador interactivo */}
+                            <div className="lg:col-span-7 h-[400px] lg:h-[600px] rounded-3xl overflow-hidden relative shadow-2xl bg-slate-900 border border-slate-200 group">
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={activeTab}
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        transition={{ duration: 0.4, ease: "easeOut" }}
+                                        className="absolute inset-0"
+                                    >
+                                        <img
+                                            src={toolsData[activeTab].image}
+                                            alt={toolsData[activeTab].title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                        />
+                                        {/* Degradado oscuro para resaltar el texto inferior */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                                        
+                                        <div className="absolute bottom-0 left-0 w-full p-8 md:p-12 text-white">
+                                            <motion.span 
+                                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                                                className="inline-block px-4 py-1.5 bg-brand-500 rounded-full text-xs font-bold tracking-wider uppercase mb-3 shadow-lg"
+                                            >
+                                                Visualización de Nivel
+                                            </motion.span>
+                                            <motion.h4 
+                                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                                                className="text-2xl md:text-3xl font-bold"
+                                            >
+                                                {toolsData[activeTab].title}
+                                            </motion.h4>
+                                        </div>
+                                    </motion.div>
+                                </AnimatePresence>
+                            </div>
                         </div>
                     </div>
                 </section>
